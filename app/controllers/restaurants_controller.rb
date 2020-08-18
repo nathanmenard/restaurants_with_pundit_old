@@ -17,11 +17,15 @@ class RestaurantsController < ApplicationController
 
   # GET /restaurants/1/edit
   def edit
+    unless @restaurant.user == current_user
+      redirect_to restaurants_path, notice: "You're not authorized to perform action"
+    end
   end
 
   # POST /restaurants
   def create
-    @restaurant = Restaurant.new(restaurant_params)
+    @restaurant      = Restaurant.new(restaurant_params)
+    @restaurant.user = current_user
 
     if @restaurant.save
       redirect_to @restaurant, notice: 'Restaurant was successfully created.'
@@ -53,6 +57,6 @@ class RestaurantsController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def restaurant_params
-      params.require(:restaurant).permit(:name, :user_id)
+      params.require(:restaurant).permit(:name)
     end
 end
